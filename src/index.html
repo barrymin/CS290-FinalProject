@@ -1,10 +1,3 @@
-<?php
-//redirect to main page if user is logged in
-session_start();
-if(isset($_SESSION["username"])){
-    header('location: http://web.engr.oregonstate.edu/~barrymin/cs290Final/main.php');
-}
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,7 +36,10 @@ if(isset($_SESSION["username"])){
 		    <label>Password: </label>
 		    <input class="form-control" id="login-password" type="password" name="user-pass" required="required">
 		  </div>
-          <input id="loginbtn" type="submit" value="login" class="btn btn-default"></input>    
+		  <div id="loginbtns">
+            <input id="loginbtn" type="submit" value="login" class="btn btn-default"></input>
+		    <input type="button" value="sign up" class="btn btn-default"></input>
+          </div>      
 	  </form>
 	</div>
     <div class="col-md-4">
