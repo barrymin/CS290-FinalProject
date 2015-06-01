@@ -28,7 +28,6 @@ if(isset($_POST["login-username"]) && isset($_POST["login-username"])){
         session_start();
         //check if sessions are disabled
         if (session_status() == PHP_SESSION_ACTIVE) {
-            //log in if user wasn't already logged in
             $_SESSION["username"] = $_POST["login-username"];
         }
     }

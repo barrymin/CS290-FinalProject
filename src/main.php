@@ -1,9 +1,10 @@
 <?php
-//redirect to login page if user is not logged in
 session_start();
+//logout user if logout button was clicked
 if(isset($_GET["logout"])){
     unset($_SESSION["username"]);
 }
+//redirect to login page if user is not logged in
 if(!isset($_SESSION["username"])){
     header('location: http://web.engr.oregonstate.edu/~barrymin/cs290Final');
 }
