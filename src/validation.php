@@ -7,7 +7,7 @@ $mysqli = new mysqli("oniddb.cws.oregonstate.edu", "barrymin-db", "CHoGMl6m7jbui
 //for login
 //check if login user and pass exist
 if(isset($_POST["login-username"]) && isset($_POST["login-username"])){
-    if (!($stmt = $mysqli->prepare("SELECT username FROM Users WHERE username = ? AND password = ?"))) {
+    if (!($stmt = $mysqli->prepare("SELECT username FROM Users WHERE username = ? AND BINARY password = ?"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
     }
     if (!$stmt->bind_param("ss", $_POST["login-username"], $_POST["login-pass"])) {
