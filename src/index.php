@@ -25,7 +25,9 @@ if(isset($_SESSION["username"])){
   <div class="col-md-4">
     <div class="page-header">
       <h1>Login Page</h1>
-	  <p>please login</p>
+	  <p>Please login or 
+	    <a href="signup.php">Create a new account</a>
+      </p>
     </div>
 	<div id="loginspace">
 	  <p id="warningmsg" class="alert-warning">
