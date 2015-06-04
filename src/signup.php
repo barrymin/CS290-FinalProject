@@ -32,7 +32,7 @@ if(isset($_SESSION["username"])){
 	<div id="signupspace">
 	  <p id="warningmsg" class="alert-warning">
 	  </p>
-	  <form role="form" onsubmit="return validateSignup()" method="get">
+	  <form role="form" onsubmit="return validateSignup()">
 		  <div class="form-group">
 		    <p id="warninguser" class="alert-warning">
 	        </p>
