@@ -101,29 +101,29 @@ if(isset($_POST["location-desc"]) && isset($_POST["location-a"]) && isset($_POST
 	if (!($stmt = $mysqli->prepare("INSERT INTO Location (A, F, zoom) VALUES (?, ?, ?)"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
     }
-    if (!$stmt->bind_param("iii", $_POST["location-a"], $_POST["location-f"], $_POST["location-zoom"])) {
+    if (!$stmt->bind_param("ssi", $_POST["location-a"], $_POST["location-f"], $_POST["location-zoom"])) {
         echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     if (!$stmt->execute()) {
-        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        echo "Execute failed1: (" . $stmt->errno . ") " . $stmt->error;
     }
     $stmt->close();
     //get location primary key
      if (!($stmt = $mysqli->prepare("SELECT lno FROM Location WHERE a = ? AND f = ? AND zoom = ?"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
     }
-    if (!$stmt->bind_param("iii", $_POST["location-a"], $_POST["location-f"], $_POST["location-zoom"])) {
+    if (!$stmt->bind_param("ssi", $_POST["location-a"], $_POST["location-f"], $_POST["location-zoom"])) {
             echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
         }
     if (!$stmt->execute()) {
-        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        echo "Execute failed2: (" . $stmt->errno . ") " . $stmt->error;
     }
     $lno=null;
     if (!$stmt->bind_result($lno)) {
         echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     if($stmt->fetch()) {
-        echo "$lno";
+        echo "$lno  ".$_POST['location-a']."  ".$_POST['location-f'];
     }
     $stmt->close();
     //insert in saved
@@ -134,8 +134,9 @@ if(isset($_POST["location-desc"]) && isset($_POST["location-a"]) && isset($_POST
         echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     if (!$stmt->execute()) {
-        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        echo "Execute failed3: (" . $stmt->errno . ") " . $stmt->error;
     }
+    $stmt->close();
 }
 
 //displaying user locations
@@ -154,17 +155,62 @@ if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
     }
     $user=null;
     $a=null;
-	$f=null;
-	$zoom=null;
-	$desc=null;
-	$share=null;
+    $f=null;
+    $zoom=null;
+    $desc=null;
+    $share=null;
     if (!$stmt->bind_result($a,$f,$zoom,$user,$desc,$share)) {
         echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
+    $exist=0;
     while($stmt->fetch()) {
+        $exist= true;
         echo "<div class='panel panel-default'>
-  <div class='panel-body'>$a,$f,$zoom,$user,$desc,$share</div>
-</div>";
+         <div class='panel-body' a='$a' f='$f' zoom='$zoom' onClick='showInMap(this)'>$user: $desc</div>
+         </div>";
     }
+    if(!$exist){
+        echo "<div class='panel panel-default'>
+         <div class='panel-body'>You don't have any locations, click on the new place button to make one!</div>
+         </div>";
+    }
+    $stmt->close();
+}
+//displaying public locations
+if(isset($_GET["location-public"]) && isset($_SESSION["username"])){
+    if (!($stmt = $mysqli->prepare("
+        SELECT l.a, l.f, l.zoom, s.username, s.description, s.share
+        FROM Location l, Saved s
+        WHERE l.lno = s.lno AND s.username <> ? AND s.share = 1"))) {
+        echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+    }
+    if (!$stmt->bind_param("s", $_SESSION["username"])) {
+        echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $user=null;
+    $a=null;
+    $f=null;
+    $zoom=null;
+    $desc=null;
+    $share=null;
+    if (!$stmt->bind_result($a,$f,$zoom,$user,$desc,$share)) {
+        echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $exist=0;
+    while($stmt->fetch()) {
+        $exist= true;
+        echo "<div class='panel panel-default'>
+         <div class='panel-body' a='$a' f='$f' zoom='$zoom' onClick='showInMap(this)'>$user: $desc</div>
+         </div>";
+    }
+    if(!$exist){
+        echo "<div class='panel panel-default'>
+         <div class='panel-body'>There are no public places!</div>
+         </div>";
+    }
+    $stmt->close();
 }
 ?>
