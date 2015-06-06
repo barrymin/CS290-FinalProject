@@ -142,7 +142,7 @@ if(isset($_POST["location-desc"]) && isset($_POST["location-a"]) && isset($_POST
 //displaying user locations
 if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
     if (!($stmt = $mysqli->prepare("
-        SELECT l.a, l.f, l.zoom, s.username, s.description, s.share
+        SELECT l.lno, l.a, l.f, l.zoom, s.username, s.description, s.share
         FROM Location l, Saved s
         WHERE l.lno = s.lno AND s.username = ?"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
@@ -153,25 +153,34 @@ if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
     if (!$stmt->execute()) {
         echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
     }
+    $locNo=null;
     $user=null;
     $a=null;
     $f=null;
     $zoom=null;
     $desc=null;
     $share=null;
-    if (!$stmt->bind_result($a,$f,$zoom,$user,$desc,$share)) {
+    if (!$stmt->bind_result($locNo,$a,$f,$zoom,$user,$desc,$share)) {
         echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     $exist=0;
     while($stmt->fetch()) {
         $exist= true;
         echo "<div class='panel panel-default'>
-         <div class='panel-body' a='$a' f='$f' zoom='$zoom' onClick='showInMap(this)'>$user: $desc</div>
-         </div>";
+         <div class='panel-body' style='cursor:pointer;' locNo='$locNo' share'$share' a='$a' f='$f' zoom='$zoom' onClick='selectLocation(this)'>$user: $desc";
+        if($share){
+            echo "<div class='panel-footer'>
+                <input type='button' class='btn btn-default' value='delete' onclick='deleteLocation(this)'>
+                <input type='button' class='btn btn-default' value='Make Private' onclick='changeLocationPrivacy(this,0)'></div></div></div>";
+        } else {
+            echo "<div class='panel-footer'>
+                <input type='button' class='btn btn-default' value='delete' onclick='deleteLocation(this)'>
+                <input type='button' class='btn btn-default' value='share' onclick='changeLocationPrivacy(this,1)'></div></div></div>";
+        }
     }
     if(!$exist){
         echo "<div class='panel panel-default'>
-         <div class='panel-body'>You don't have any locations, click on the new place button to make one!</div>
+         <div class='panel-body'>You don't have any locations, click on the new location button to make one!</div>
          </div>";
     }
     $stmt->close();
@@ -179,7 +188,7 @@ if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
 //displaying public locations
 if(isset($_GET["location-public"]) && isset($_SESSION["username"])){
     if (!($stmt = $mysqli->prepare("
-        SELECT l.a, l.f, l.zoom, s.username, s.description, s.share
+        SELECT l.lno,l.a, l.f, l.zoom, s.username, s.description, s.share
         FROM Location l, Saved s
         WHERE l.lno = s.lno AND s.username <> ? AND s.share = 1"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
@@ -190,26 +199,84 @@ if(isset($_GET["location-public"]) && isset($_SESSION["username"])){
     if (!$stmt->execute()) {
         echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
     }
+    $locNo=null;
     $user=null;
     $a=null;
     $f=null;
     $zoom=null;
     $desc=null;
     $share=null;
-    if (!$stmt->bind_result($a,$f,$zoom,$user,$desc,$share)) {
+    if (!$stmt->bind_result($locNo,$a,$f,$zoom,$user,$desc,$share)) {
         echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     $exist=0;
     while($stmt->fetch()) {
         $exist= true;
         echo "<div class='panel panel-default'>
-         <div class='panel-body' a='$a' f='$f' zoom='$zoom' onClick='showInMap(this)'>$user: $desc</div>
+         <div class='panel-body' style='cursor:pointer;' locNo='$locNo' a='$a' f='$f' zoom='$zoom' onClick='showInMap(this)'>$user: $desc</div>
          </div>";
     }
     if(!$exist){
         echo "<div class='panel panel-default'>
          <div class='panel-body'>There are no public places!</div>
          </div>";
+    }
+    $stmt->close();
+}
+
+//delete location
+if(isset($_SESSION["username"]) && isset($_GET["delete-location"])){
+    if (!($stmt = $mysqli->prepare("DELETE FROM Saved WHERE username = ? AND lno =?"))) {
+        echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+    }
+    if (!$stmt->bind_param("si", $_SESSION["username"],$_GET["delete-location"])) {
+        echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $stmt->close();
+    
+    //delete from locations table if no other user saved the same location
+    if (!($stmt = $mysqli->prepare("SELECT COUNT(lno) FROM Saved WHERE lno =?"))) {
+        echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+    }
+    if (!$stmt->bind_param("i",$_GET["delete-location"])) {
+        echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $count=null;
+    if (!$stmt->bind_result($count)) {
+        echo "Binding output parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $stmt->fetch();
+    echo "count is $count";
+    $stmt->close();
+    if($count == 0){ 
+        if (!($stmt = $mysqli->prepare("DELETE FROM Location WHERE lno =?"))) {
+            echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+        }
+        if (!$stmt->bind_param("i",$_GET["delete-location"])) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+        }
+        if (!$stmt->execute()) {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        }
+    }
+}
+
+//change location privacy
+if(isset($_SESSION["username"]) && isset($_GET["share"]) && isset($_GET["share-lno"])){
+    if (!($stmt = $mysqli->prepare("UPDATE Saved SET share = ? WHERE username = ? AND lno = ?"))) {
+        echo "Prepare failed11: (" . $mysqli->errno . ") " . $mysqli->error;
+    }
+    if (!$stmt->bind_param("isi", $_GET["share"],$_SESSION["username"],$_GET["share-lno"])) {
+        echo "Binding parameters failed11: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
     }
     $stmt->close();
 }

@@ -27,23 +27,22 @@ if(!isset($_SESSION["username"])){
   <div class="container">
     <div class="page-header">
       <div class="row">
-        <div class="col-md-8">
-          <h1>Welcome</h1>
+        <div class="col-md-10">
+          <h1>Find, Save and Share Locations!</h1>
           <p></p>
-		  <input id="showNew" type="button" name="new" value="New Location" class="btn btn-default">
         </div>
-        <div class="col-md-4">
-          <form method="get">
-            <input type="submit" name="logout" value="logout" class="btn btn-default">
-          </form>
-        </div>
+        <div class="col-md-2">
+            <form method="get">
+              <input type="submit" name="logout" value="logout" class="btn btn-default">
+            </form>
+          </div>
       </div>
     </div>
 	<div class="row">
 		<div class='panel panel-default' id="newlocation">
 			<div class='panel-body'>
 			  <div class="col-md-5">
-				<h3>1. Zoom into place:</h3>
+				<h3>1. Select a place:</h3>
 				<div id="googleMap" style="width:100%;height:380px;"></div>
 			  </div>
 			  <div class="col-md-6">
@@ -52,14 +51,14 @@ if(!isset($_SESSION["username"])){
 				  <div class="form-group">
 					<p id="warningdesc" class="alert-warning">
 					</p>
-					<label>Great place to: </label>
-					<textarea class="form-control" id="location-desc" onchange="validateDesc(this.value)"></textarea>
+					<textarea class="form-control" id="location-desc" onchange="validateDesc(this.value)">Great place to..</textarea>
 				  </div>
 				  <div class="form-group">
 					<input type="checkbox" id="location-public">Make it public</input>
 				  </div>
 				 <div class="form-group">
 					<input id="saveLocationButton" class="btn btn-default" type="button" value="Save Place" onclick="saveLocation()">
+                    <input class="btn btn-default" type="button" value="cancel" onclick="cancelSaveLocation()">
 				  </div>
 				</form>
 			  </div>
@@ -67,18 +66,18 @@ if(!isset($_SESSION["username"])){
 		</div>
 	</div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-sm-6">
         <div id="main">
           <ul class="nav nav-tabs">
-            <li onclick="displayLocations()"><a href="#">My Locations</a></li>
-            <li><a href="#">Followed</a></li>
-            <li onclick="displayPublic()"><a href="#">Public</a></li>
+            <li onclick="displayLocations()"><a>My Locations</a></li>
+            <li onclick="displayPublic()"><a>Public</a></li>
+            <input id="showNew" type="button" name="new" value="New Location" class="btn btn-info">
           </ul>
-		  <div id="displayLocations">
+		  <div id="displayLocations" style="overflow-y: scroll; height:300px">
 		  </div>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-sm-6">
         <div id="googleMap2" style="width:100%;height:380px;"></div>
       </div>
     </div>
