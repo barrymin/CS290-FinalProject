@@ -17,42 +17,40 @@ if(isset($_SESSION["username"])){
   <script src="login.js"></script>
 </head>
 <body>
-
-<div class="container">
-  <div class="row">
-  <div class="col-md-4">
-  </div>
-  <div class="col-md-4">
-    <div class="page-header">
-      <h1>Login Page</h1>
-	  <p>Please login or 
-	    <a href="signup.php">Create a new account</a>
-      </p>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <div class="page-header">
+          <h1>Login Page</h1>
+          <p>Please login or 
+            <a href="signup.php">Create a new account</a>
+          </p>
+        </div>
+        <div id="loginspace">
+          <p id="warningmsg" class="alert-warning">
+          </p>
+          <form role="form" onsubmit="return validateLogin()">
+            <div class="form-group">
+              <p id="warninguser" class="alert-warning">
+              </p>
+              <label>Userame: </label>
+              <input class="form-control" id="login-username" type="text" name="user-username" required="required">
+            </div>
+            <div class="form-group">
+              <p id="warningpass" class="alert-warning">
+              </p>
+              <label>Password: </label>
+              <input class="form-control" id="login-password" type="password" name="user-pass" required="required">
+            </div>
+            <input id="loginbtn" type="submit" value="login" class="btn btn-default"></input>    
+          </form>
+        </div>
+        <div class="col-md-4">
+        </div>
+      </div>
     </div>
-	<div id="loginspace">
-	  <p id="warningmsg" class="alert-warning">
-	  </p>
-	  <form role="form" onsubmit="return validateLogin()">
-		  <div class="form-group">
-		    <p id="warninguser" class="alert-warning">
-	        </p>
-		    <label>Userame: </label>
-		    <input class="form-control" id="login-username" type="text" name="user-username" required="required">
-		  </div>
-		  <div class="form-group">
-		    <p id="warningpass" class="alert-warning">
-	        </p>
-		    <label>Password: </label>
-		    <input class="form-control" id="login-password" type="password" name="user-pass" required="required">
-		  </div>
-          <input id="loginbtn" type="submit" value="login" class="btn btn-default"></input>    
-	  </form>
-	</div>
-    <div class="col-md-4">
-    </div>
   </div>
-
-  </div>
-</div>
 </body>
 </html>

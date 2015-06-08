@@ -6,7 +6,6 @@ $mysqli = new mysqli("oniddb.cws.oregonstate.edu", "barrymin-db", "CHoGMl6m7jbui
     }
 session_start();
 //for login
-//check if login user and pass exist
 if(isset($_POST["login-username"]) && isset($_POST["login-username"])){
     if (!($stmt = $mysqli->prepare("SELECT username FROM Users WHERE username = ? AND BINARY password = ?"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
@@ -83,7 +82,6 @@ if(isset($_POST["signup-username"]) && isset($_POST["signup-pass"]) && isset($_P
                 echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
             }else{
                 //log user in
-                
                 //check if sessions are disabled
                 if (session_status() == PHP_SESSION_ACTIVE) {
                     $_SESSION["username"] = $_POST["signup-username"];
@@ -98,7 +96,7 @@ if(isset($_POST["signup-username"]) && isset($_POST["signup-pass"]) && isset($_P
 if(isset($_POST["location-desc"]) && isset($_POST["location-a"]) && isset($_POST["location-f"]) &&
     isset($_POST["location-zoom"]) && isset($_POST["location-share"]) && isset($_SESSION["username"])){
     //insert location
-	if (!($stmt = $mysqli->prepare("INSERT INTO Location (A, F, zoom) VALUES (?, ?, ?)"))) {
+    if (!($stmt = $mysqli->prepare("INSERT INTO Location (A, F, zoom) VALUES (?, ?, ?)"))) {
         echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
     }
     if (!$stmt->bind_param("ssi", $_POST["location-a"], $_POST["location-f"], $_POST["location-zoom"])) {
@@ -167,13 +165,13 @@ if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
     while($stmt->fetch()) {
         $exist= true;
         echo "<div class='panel panel-default'>
-         <div class='panel-body' style='cursor:pointer;' locNo='$locNo' share'$share' a='$a' f='$f' zoom='$zoom' onClick='selectLocation(this)'>$user: $desc";
+         <div class='panel-body' style='cursor:pointer;' locNo='$locNo' share'$share' a='$a' f='$f' zoom='$zoom' onClick='selectLocation(this)'>$user: $desc  ";
         if($share){
-            echo "<div class='panel-footer'>
+            echo "<span class='label label-default'>Public</span><div class='panel-footer'>
                 <input type='button' class='btn btn-default' value='delete' onclick='deleteLocation(this)'>
                 <input type='button' class='btn btn-default' value='Make Private' onclick='changeLocationPrivacy(this,0)'></div></div></div>";
         } else {
-            echo "<div class='panel-footer'>
+            echo "<small>Private</small><div class='panel-footer'>
                 <input type='button' class='btn btn-default' value='delete' onclick='deleteLocation(this)'>
                 <input type='button' class='btn btn-default' value='share' onclick='changeLocationPrivacy(this,1)'></div></div></div>";
         }
@@ -187,6 +185,7 @@ if(isset($_GET["location-user"]) && isset($_SESSION["username"])){
 }
 //displaying public locations
 if(isset($_GET["location-public"]) && isset($_SESSION["username"])){
+    //public locations should not include the user locations
     if (!($stmt = $mysqli->prepare("
         SELECT l.lno,l.a, l.f, l.zoom, s.username, s.description, s.share
         FROM Location l, Saved s

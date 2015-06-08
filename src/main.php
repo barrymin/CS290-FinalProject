@@ -23,7 +23,6 @@ if(!isset($_SESSION["username"])){
   <script src="main.js"></script>
 </head>
 <body>
-
   <div class="container">
     <div class="page-header">
       <div class="row">
@@ -38,43 +37,43 @@ if(!isset($_SESSION["username"])){
           </div>
       </div>
     </div>
-	<div class="row">
-		<div class='panel panel-default' id="newlocation">
-			<div class='panel-body'>
-			  <div class="col-md-5">
-				<h3>1. Select a place:</h3>
-				<div id="googleMap" style="width:100%;height:380px;"></div>
-			  </div>
-			  <div class="col-md-6">
-				<h3>2. write a description for the place and save!</h3>
-				<form role="form">
-				  <div class="form-group">
-					<p id="warningdesc" class="alert-warning">
-					</p>
-					<textarea class="form-control" id="location-desc" onchange="validateDesc(this.value)">Great place to..</textarea>
-				  </div>
-				  <div class="form-group">
-					<input type="checkbox" id="location-public">Make it public</input>
-				  </div>
-				 <div class="form-group">
-					<input id="saveLocationButton" class="btn btn-default" type="button" value="Save Place" onclick="saveLocation()">
-                    <input class="btn btn-default" type="button" value="cancel" onclick="cancelSaveLocation()">
-				  </div>
-				</form>
-			  </div>
-			</div>
-		</div>
-	</div>
+    <div class="row">
+      <div class='panel panel-default' id="newlocation">
+        <div class='panel-body'>
+          <div class="col-md-5">
+            <h3>1. Select a place:</h3>
+            <div id="googleMap" style="width:100%;height:380px;"></div>
+          </div>
+          <div class="col-md-6">
+            <h3>2. write a description for the place and save!</h3>
+            <form role="form">
+              <div class="form-group">
+                <p id="warningdesc" class="alert-warning">
+                </p>
+                <textarea class="form-control" id="location-desc" onchange="validateDesc(this.value)">Great place to..</textarea>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" id="location-public">Make it public <small>(It will be available to other users to see in their public tab)</small></input>
+              </div>
+              <div class="form-group">
+                <input id="saveLocationButton" class="btn btn-default" type="button" value="Save Place" onclick="saveLocation()">
+                <input class="btn btn-default" type="button" value="cancel" onclick="cancelSaveLocation()">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-sm-6">
         <div id="main">
           <ul class="nav nav-tabs">
             <li onclick="displayLocations()"><a>My Locations</a></li>
             <li onclick="displayPublic()"><a>Public</a></li>
-            <input id="showNew" type="button" name="new" value="New Location" class="btn btn-info">
+            <input id="showNew" type="button" name="new" value="New Location" class="btn btn-primary">
           </ul>
-		  <div id="displayLocations" style="overflow-y: scroll; height:300px">
-		  </div>
+          <div id="displayLocations" style="overflow-y: scroll; height:300px">
+          </div>
         </div>
       </div>
       <div class="col-sm-6">
